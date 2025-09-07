@@ -1,8 +1,6 @@
 # lintymclintface: A Fast, Modular Syntax Checker for Python, Java, and R
 
-<p align="center">
-  <img src="mascot.png" alt="Lintymclintface Mascot" width="200">
-</p>
+<img src="mascot.png" alt="Lintymclintface Mascot" width="200" align="left" style="margin-right: 15px;">
 
 `lintymclintface` is a high-performance, modular syntax checker designed to quickly identify common errors in Python, Java, and R code. Built with Rust and leveraging the power of Tree-sitter, it provides both a command-line interface (CLI) for local use and a RESTful web service for integration into automated systems.
 
