@@ -7,7 +7,7 @@ then
     exit 1
 fi
 
-LINTER_CMD="./target/debug/java-syntax"
+LINTER_CMD="./target/release/lintymclintface"
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
@@ -17,7 +17,7 @@ failed_tests=0
 
 echo "Running tests for working files..."
 for file in tests/working/*.java; do
-    output=$($LINTER_CMD "$file")
+    output=$($LINTER_CMD -l java -f "$file")
     if [ "$(echo -n "$output" | jq 'length')" -eq 0 ]; then
         echo -e "${GREEN}PASS${NC}: $file"
         ((passed_tests++))
@@ -32,7 +32,7 @@ done
 echo ""
 echo "Running tests for failing files..."
 for file in tests/failing/*.java; do
-    output=$($LINTER_CMD "$file")
+    output=$($LINTER_CMD -l java -f "$file")
     if [ "$(echo -n "$output" | jq 'length')" -gt 0 ]; then
         echo -e "${GREEN}PASS${NC}: $file"
         ((passed_tests++))

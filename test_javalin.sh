@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LINTER_CMD="./target/debug/java-syntax"
+LINTER_CMD="./target/release/lintymclintface"
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
@@ -12,7 +12,7 @@ total_files=0
 echo "Running linter on javalin project..."
 for file in $(find tests/javalin -name "*.java"); do
     ((total_files++))
-    output=$($LINTER_CMD "$file")
+    output=$($LINTER_CMD -l java -f "$file")
     if [ "$(echo -n "$output" | jq 'length')" -eq 0 ]; then
         echo -e "${GREEN}PASS${NC}: $file"
         ((passed_files++))
