@@ -21,6 +21,25 @@ Before you can build and run `lintymclintface`, you'll need the following instal
 *   **Git**: For cloning the repository and the example repositories. Download from [git-scm.com](https://git-scm.com/downloads).
 *   **cURL** (optional, for testing the web service): A command-line tool for making HTTP requests. Usually pre-installed on macOS and Linux. For Windows, you can download it from the [official cURL website](https://curl.se/download.html).
 
+### Code Quality
+
+To ensure code quality and consistency, `lintymclintface` uses `rustfmt` for code formatting and `clippy` for linting. It's recommended to run these tools before committing changes.
+
+*   **Format Code:**
+    ```bash
+    cargo fmt --all
+    ```
+    To check for formatting issues without applying them:
+    ```bash
+    cargo fmt --all -- --check
+    ```
+
+*   **Run Linter (Clippy):**
+    ```bash
+    cargo clippy --all-targets -- -D warnings
+    ```
+    This command runs Clippy on all targets and treats linter warnings as errors, ensuring a high standard of code quality.
+
 ### Building from Source
 
 1.  **Clone the repository**:

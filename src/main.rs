@@ -89,6 +89,7 @@ async fn metrics() -> impl Responder {
     String::from_utf8(buffer).unwrap()
 }
 
+/// Command-line arguments for the lintymclintface application.
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
@@ -105,6 +106,10 @@ struct Cli {
     service: bool,
 }
 
+/// Main entry point for the lintymclintface application.
+///
+/// It can run as a command-line tool for linting a single file,
+/// or as a web service for handling linting requests via HTTP.
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // Initialize tracing subscriber

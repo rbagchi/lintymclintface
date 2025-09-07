@@ -72,6 +72,7 @@ impl Linter {
     }
 }
 
+/// Lints the given R code and returns a list of syntax errors.
 pub fn lint(code: &str) -> Result<Vec<SyntaxError>, LinterError> {
     let mut linter = Linter::new()?;
     linter.lint(code)
