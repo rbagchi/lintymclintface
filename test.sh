@@ -18,7 +18,7 @@ failed_tests=0
 echo "Running tests for working files..."
 for file in tests/working/*.java; do
     output=$($LINTER_CMD -l java -f "$file")
-    if [ "$(echo -n "$output" | jq 'length')" -eq 0 ]; then
+    if [ -z "$output" ]; then
         echo -e "${GREEN}PASS${NC}: $file"
         ((passed_tests++))
     else
@@ -33,7 +33,7 @@ echo ""
 echo "Running tests for failing files..."
 for file in tests/failing/*.java; do
     output=$($LINTER_CMD -l java -f "$file")
-    if [ "$(echo -n "$output" | jq 'length')" -gt 0 ]; then
+    if [ -n "$output" ]; then
         echo -e "${GREEN}PASS${NC}: $file"
         ((passed_tests++))
     else
