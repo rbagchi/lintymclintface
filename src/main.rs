@@ -2,7 +2,7 @@ use actix_web::{web, App, HttpServer, Responder};
 use serde::{Deserialize, Serialize};
 use clap::Parser;
 use std::fs;
-use tracing::{info, warn, error, debug};
+use tracing::{info, error};
 use tracing_subscriber::{EnvFilter, FmtSubscriber};
 
 use prometheus::{Encoder, TextEncoder, Gauge, Counter, Opts, Registry, IntCounterVec};
@@ -10,38 +10,12 @@ use lazy_static::lazy_static;
 use std::time::Instant;
 
 mod linters;
+use lintymclintface::{SyntaxError, LinterError}; // Import from the library
 
 #[derive(Deserialize)]
 struct LintRequest {
     language: String,
     code: String,
-}
-
-#[derive(Serialize, Debug, Clone)]
-pub struct SyntaxError {
-    pub line: usize,
-    pub column: usize,
-    pub message: String,
-}
-
-#[derive(Debug)]
-pub enum LinterError {
-    Io(String),
-    Parse(String),
-    TreeSitterParseError(String), // New variant for tree-sitter specific parsing failures
-    UnsupportedLanguage(String),
-}
-
-impl From<std::io::Error> for LinterError {
-    fn from(err: std::io::Error) -> Self {
-        LinterError::Io(err.to_string())
-    }
-}
-
-impl From<LinterError> for std::io::Error {
-    fn from(err: LinterError) -> Self {
-        std::io::Error::new(std::io::ErrorKind::Other, format!("{:?}", err))
-    }
 }
 
 // --- Prometheus Metrics --- 
@@ -136,6 +110,7 @@ async fn main() -> std::io::Result<()> {
     // Initialize tracing subscriber
     let subscriber = FmtSubscriber::builder()
         .with_env_filter(EnvFilter::from_default_env())
+        .with_writer(std::io::stderr) // Direct logs to stderr
         .finish();
     tracing::subscriber::set_global_default(subscriber)
         .expect("setting default subscriber failed");

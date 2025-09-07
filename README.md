@@ -142,7 +142,22 @@ By default, the CLI output is concise. To see more detailed debug information, y
 RUST_LOG=debug target/release/lintymclintface -l python -f test_python_error.py
 ```
 
+### Running Tests
+
+To run the unit tests for `lintymclintface`, which include checks for Python, Java, and R files (both working and intentionally failing cases), use the following command:
+
+```bash
+cargo test
+```
+
+To see detailed output from the tests, including which files are being tested, use:
+
+```bash
+cargo test -- --nocapture
+```
+
 ### Web Service (REST API)
+
 
 `lintymclintface` can also run as a web service, accepting linting requests via HTTP POST.
 

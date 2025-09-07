@@ -1,6 +1,6 @@
 use crate::{LinterError, SyntaxError};
 use tree_sitter::{Node, Parser as TreeSitterParser};
-use tracing::{debug, info, error};
+use tracing::{debug, error};
 
 struct Linter {
     parser: TreeSitterParser,
