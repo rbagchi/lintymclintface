@@ -10,10 +10,24 @@ failed_files=0
 total_files=0
 
 echo "Running linter on javalin project..."
-for file in $(find tests/javalin -name "*.java"); do
+REPO_DIR="tmp_javalin_repo"
+
+# Clone the repository if it doesn't exist
+if [ ! -d "${REPO_DIR}" ]; then
+  echo "Cloning Javalin into ${REPO_DIR}..."
+  git clone https://github.com/javalin/javalin.git ${REPO_DIR}
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to clone repository."
+    exit 1
+  fi
+else
+  echo "Repository ${REPO_DIR} already exists. Skipping clone."
+fi
+
+for file in $(find ${REPO_DIR} -name "*.java"); do
     ((total_files++))
     output=$($LINTER_CMD -l java -f "$file")
-    if [ "$(echo -n "$output" | jq 'length')" -eq 0 ]; then
+    if [ -z "$output" ]; then
         echo -e "${GREEN}PASS${NC}: $file"
         ((passed_files++))
     else

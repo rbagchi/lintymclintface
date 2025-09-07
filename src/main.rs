@@ -28,6 +28,7 @@ pub struct SyntaxError {
 pub enum LinterError {
     Io(String),
     Parse(String),
+    TreeSitterParseError(String), // New variant for tree-sitter specific parsing failures
     UnsupportedLanguage(String),
 }
 
@@ -97,6 +98,7 @@ async fn lint_service(req: web::Json<LintRequest>) -> impl Responder {
             let error = match e {
                 LinterError::Io(msg) => SyntaxError { line: 0, column: 0, message: msg },
                 LinterError::Parse(msg) => SyntaxError { line: 0, column: 0, message: msg },
+                LinterError::TreeSitterParseError(msg) => SyntaxError { line: 0, column: 0, message: msg },
                 LinterError::UnsupportedLanguage(msg) => SyntaxError { line: 0, column: 0, message: format!("Unsupported language: {}", msg) },
             };
             web::Json(vec![error])
@@ -181,6 +183,7 @@ async fn main() -> std::io::Result<()> {
                 let error_msg = match e {
                     LinterError::Io(msg) => format!("IO Error: {}", msg),
                     LinterError::Parse(msg) => format!("Parse Error: {}", msg),
+                    LinterError::TreeSitterParseError(msg) => format!("Tree-sitter Parse Error: {}", msg),
                     LinterError::UnsupportedLanguage(msg) => format!("Unsupported Language Error: {}", msg),
                 };
                 let structured_error = serde_json::to_string_pretty(&vec![SyntaxError { line: 0, column: 0, message: error_msg }])
