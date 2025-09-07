@@ -15,6 +15,7 @@ The linter now employs several heuristics to ignore certain syntax errors report
 
 *   **Description:** For `ERROR` nodes where the `error_text` is very long (over 100 characters) and contains both `@NotNull` and `addWsHandler`, the error is ignored.
 *   **Risk:** This is a highly targeted workaround for a specific method declaration issue in `Javalin.java`. While effective for that file, it's a brittle heuristic that could potentially mask genuine errors if similar, but syntactically incorrect, code patterns emerge.
+    *   **Note:** A dedicated unit test for this specific issue has been added at `tests/failing/JavalinIssue.java` to serve as a regression test.
 
 ### 3. Broad `error_text` Contains Checks
 
