@@ -28,7 +28,6 @@ Before you can build and run `lintymclintface`, you'll need the following instal
     git clone https://github.com/rbagchi/lintymclintface.git
     cd lintymclintface
     ```
-    *(Note: Replace `your-username` with the actual GitHub username/organization once the project is pushed.)*
 
 2.  **Build the project in release mode**:
     ```bash
