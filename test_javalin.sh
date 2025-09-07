@@ -1,6 +1,11 @@
 #!/bin/bash
 
 LINTER_CMD="./target/release/lintymclintface"
+if [ ! -f "$LINTER_CMD" ]; then
+    echo "Error: Linter binary not found at $LINTER_CMD"
+    echo "Please build the project first by running 'cargo build --release'"
+    exit 1
+fi
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
