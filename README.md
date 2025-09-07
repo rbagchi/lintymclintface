@@ -186,10 +186,10 @@ cargo test -- --nocapture
 `lintymclintface` can also run as a web service, accepting linting requests via HTTP POST.
 
 1.  **Start the service**:
-```bash
+  ```bash
 target/release/lintymclintface --service &
-```
-    This will start the service in the background on `http://127.0.0.1:8080`. You can observe logging output in the terminal where you ran this command.
+  ```
+  This will start the service in the background on `http://127.0.0.1:8080`. You can observe logging output in the terminal where you ran this command.
 
 2.  **Linting via API (using cURL)**:
 
