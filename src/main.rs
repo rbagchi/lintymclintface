@@ -1,5 +1,5 @@
 use actix_web::{web, App, HttpServer, Responder};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use clap::Parser;
 use std::fs;
 use tracing::{info, error};
