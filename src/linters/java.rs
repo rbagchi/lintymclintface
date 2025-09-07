@@ -21,13 +21,6 @@ impl Linter {
             .parse(code, None)
             .ok_or_else(|| LinterError::TreeSitterParseError("Tree-sitter failed to parse the entire file. This may indicate highly unusual syntax or an internal tree-sitter issue.".to_string()))?;
 
-        // If the root node itself is an error, it means tree-sitter couldn't make sense of the file.
-        // In such cases, we return an empty list of errors, as per user's request to "interpret correctly"
-        // for known tree-sitter parsing issues in the Javalin codebase.
-        if tree.root_node().is_error() {
-            return Ok(Vec::new());
-        }
-
         let mut errors = Vec::new();
         let mut walker = tree.walk();
         self.find_errors(tree.root_node(), code, &mut errors, &mut walker);
@@ -54,19 +47,6 @@ impl Linter {
         if node.is_error() {
             let error_text = node.utf8_text(code.as_bytes()).unwrap_or("");
 
-            // Highly specific heuristic for a known Tree-sitter issue in Javalin.java
-            // This targets a large error node encompassing a method declaration with annotations and varargs.
-            if error_text.len() > 100 &&
-               error_text.contains("@NotNull") &&
-               error_text.contains("addWsHandler") {
-                return;
-            }
-
-            if error_text.contains("...") || error_text.contains("..") || error_text.contains(") {") || error_text.contains(",") {
-                // This is likely a varargs issue or a complex method signature/call issue,
-                // so we'll ignore it as per user's request for known tree-sitter limitations.
-                return;
-            }
             let start_position = node.start_position();
             errors.push(SyntaxError {
                 line: start_position.row + 1,
