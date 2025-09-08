@@ -18,6 +18,32 @@ Once the image is built, you can run the service in a container. The `-p 8080:80
 docker run -d -p 8080:8080 --name lintymclintface-container lintymclintface-service
 ```
 
+**Running on an Arbitrary Host Port:**
+
+To map the container's port 8080 to a different port on your host machine (e.g., 9000), modify the `-p` flag:
+
+```bash
+docker run -d -p 9000:8080 --name lintymclintface-container lintymclintface-service
+```
+
+**Changing the Container's Internal Listening Port (Advanced):**
+
+The `lintymclintface` application inside the container listens on port 8080 by default. You can change this by overriding the `CMD` in the `docker run` command and specifying the `--port` argument or `LINT_SERVER_PORT` environment variable. Remember to adjust the host port mapping accordingly.
+
+Example (container listens on 8081, mapped to host 9000):
+
+```bash
+docker run -d -p 9000:8081 --name lintymclintface-container lintymclintface-service \
+  ./lintymclintface --service --port 8081
+```
+
+Or using an environment variable:
+
+```bash
+docker run -d -p 9000:8081 --name lintymclintface-container lintymclintface-service \
+  -e LINT_SERVER_PORT=8081
+```
+
 To observe logs from the container, use `docker logs lintymclintface-container`. Note that ANSI color output has been disabled in the application's logging for better compatibility with `docker logs`.
 
 To stop the container:
