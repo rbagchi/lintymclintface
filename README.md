@@ -11,6 +11,8 @@
 
 *   **Fast Syntax Checking**: Utilizes Tree-sitter for efficient and accurate parsing.
 *   **Multi-language Support**: Supports Python, Java, and R.
+*   **Configurable Server Port**: Easily change the web service's listening port via command-line argument or environment variable.
+*   **Docker Integration**: Containerize the service for consistent deployment across environments.
 *   **Command-Line Interface (CLI)**: Easily lint individual files from your terminal.
 *   **Web Service (REST API)**: Integrate linting into your CI/CD pipelines or other automated workflows via HTTP POST requests.
 *   **Structured Error Output**: Provides syntax errors in a machine-readable JSON format, ideal for programmatic consumption.
@@ -71,6 +73,28 @@ target/release/lintymclintface -l <language> -f <file_path>
 
 *   `<language>`: Can be `python`, `java`, or `r`.
 *   `<file_path>`: The absolute or relative path to the file you want to lint.
+
+If you run `lintymclintface` without any arguments, it will display the help text:
+
+```bash
+target/release/lintymclintface
+```
+
+Expected output (help text):
+
+```
+Command-line arguments for the lintymclintface application
+
+Usage: lintymclintface [OPTIONS]
+
+Options:
+  -l, --language <LANGUAGE>  Language to lint (java, python, r)
+  -f, --file <FILE>          Path to the file to lint
+  -s, --service              Start as a web service
+      --port <PORT>          Port to listen on for the web service [default: 8080]
+  -h, --help                 Print help
+  -V, --version              Print version
+```
 
 **Example: Linting a Python file**
 

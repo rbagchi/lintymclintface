@@ -1,6 +1,7 @@
 use actix_web::{web, App, HttpServer, Responder};
+use std::io::IsTerminal;
 use serde::Deserialize;
-use clap::Parser;
+use clap::{Parser, CommandFactory};
 use std::fs;
 use tracing::{info, error};
 use tracing_subscriber::{EnvFilter, FmtSubscriber};
@@ -37,6 +38,14 @@ lazy_static! {
         "lint_errors_total",
         "Total number of linting errors found."
     ).unwrap();
+    pub static ref LINT_ERRORS_BY_LANGUAGE: IntCounterVec = IntCounterVec::new(
+        Opts::new("lint_errors_by_language", "Total number of linting errors by language."),
+        &["language"]
+    ).unwrap();
+    pub static ref LINT_LAST_FILE_ERRORS: Gauge = Gauge::new(
+        "lint_last_file_errors",
+        "Number of errors in the last processed file."
+    ).unwrap();
 }
 
 fn register_metrics() {
@@ -44,9 +53,12 @@ fn register_metrics() {
     REGISTRY.register(Box::new(LINT_REQUESTS_BY_LANGUAGE.clone())).unwrap();
     REGISTRY.register(Box::new(LINT_DURATION_SECONDS.clone())).unwrap();
     REGISTRY.register(Box::new(LINT_ERRORS_TOTAL.clone())).unwrap();
+    REGISTRY.register(Box::new(LINT_ERRORS_BY_LANGUAGE.clone())).unwrap();
+    REGISTRY.register(Box::new(LINT_LAST_FILE_ERRORS.clone())).unwrap();
 }
 
 async fn lint_service(req: web::Json<LintRequest>) -> impl Responder {
+    info!("Received lint request for language: {}", req.language);
     LINT_REQUESTS_TOTAL.inc();
     LINT_REQUESTS_BY_LANGUAGE.with_label_values(&[&req.language]).inc();
 
@@ -65,6 +77,8 @@ async fn lint_service(req: web::Json<LintRequest>) -> impl Responder {
     match result {
         Ok(errors) => {
             LINT_ERRORS_TOTAL.inc_by(errors.len() as f64);
+            LINT_ERRORS_BY_LANGUAGE.with_label_values(&[&req.language]).inc_by(errors.len() as u64);
+            LINT_LAST_FILE_ERRORS.set(errors.len() as f64);
             web::Json(errors)
         },
         Err(e) => {
@@ -104,6 +118,10 @@ struct Cli {
     /// Start as a web service
     #[arg(short, long)]
     service: bool,
+
+    /// Port to listen on for the web service
+    #[arg(long, default_value_t = 8080, env = "LINT_SERVER_PORT")]
+    port: u16,
 }
 
 /// Main entry point for the lintymclintface application.
@@ -112,10 +130,12 @@ struct Cli {
 /// or as a web service for handling linting requests via HTTP.
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    info!("Application started.");
     // Initialize tracing subscriber
     let subscriber = FmtSubscriber::builder()
         .with_env_filter(EnvFilter::from_default_env())
-        .with_writer(std::io::stderr) // Direct logs to stderr
+        .with_writer(std::io::stdout) // Direct logs to stdout
+        .with_ansi(std::io::stdout().is_terminal()) // Enable ANSI only if stdout is a TTY
         .finish();
     tracing::subscriber::set_global_default(subscriber)
         .expect("setting default subscriber failed");
@@ -124,14 +144,20 @@ async fn main() -> std::io::Result<()> {
 
     let cli = Cli::parse();
 
-    if cli.service || (cli.language.is_none() && cli.file.is_none()) {
-        info!("Starting lintymclintface in web service mode on 127.0.0.1:8080");
+    // If no arguments are provided, print help and exit
+    if std::env::args().len() == 1 {
+        Cli::command().print_help()?;
+        return Ok(());
+    }
+
+    if cli.service {
+        info!("Starting lintymclintface in web service mode on 0.0.0.0:{}", cli.port);
         HttpServer::new(|| {
             App::new()
                 .route("/lint", web::post().to(lint_service))
                 .route("/metrics", web::get().to(metrics)) // Add metrics endpoint
         })
-        .bind("127.0.0.1:8080")?
+        .bind(format!("0.0.0.0:{}", cli.port))?
         .run()
         .await
     } else if let (Some(language), Some(file_path)) = (cli.language, cli.file) {
@@ -174,7 +200,9 @@ async fn main() -> std::io::Result<()> {
         }
         Ok(())
     } else {
-        error!("Usage: lintymclintface --language <lang> --file <path> or lintymclintface --service");
+        // This else block should ideally not be reached if arguments are properly validated by clap
+        // However, as a fallback, we can print the help message.
+        Cli::command().print_help()?;
         Ok(())
     }
 }
