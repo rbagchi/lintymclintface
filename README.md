@@ -61,6 +61,33 @@ To ensure code quality and consistency, `lintymclintface` uses `rustfmt` for cod
     ```
     This command compiles the project and creates an optimized executable binary located at `target/release/lintymclintface`.
 
+### Installation on Host
+
+For a more convenient system-wide installation, you can use the provided `install.sh` script. This script will build the `lintymclintface` binary in release mode and copy it to `/usr/local/bin/`, making it accessible from any directory in your terminal.
+
+1.  **Make the installation script executable**:
+    ```bash
+    chmod +x install.sh
+    ```
+
+2.  **Run the installation script**:
+    ```bash
+    ./install.sh
+    ```
+    The script will prompt for your `sudo` password as it needs to copy the binary to a system directory.
+
+Once installed, you can run `lintymclintface` directly from your terminal:
+
+```bash
+lintymclintface -l java -f MyFile.java
+```
+
+To uninstall `lintymclintface`, you can simply remove the binary:
+
+```bash
+sudo rm /usr/local/bin/lintymclintface
+```
+
 ## Usage
 
 ### Command-Line Interface (CLI)
