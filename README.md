@@ -282,6 +282,12 @@ cd examples/
 ./lint_r_repo.sh
 ```
 
+## Integration with Vibe-Coding Examples
+
+`lintymclintface` is designed to be a versatile linting tool that can be integrated into various development workflows. One such application is its use within "vibe-coding examples" to ensure code quality.
+
+Specifically, in the context of the provided "Rubik's cube solver" vibe-coding example, `lintymclintface` is utilized as a Java linter. It helps to quickly verify the integrity of the generated Java code before further build steps (e.g., using Bazel). This demonstrates how `lintymclintface` can serve as an early feedback mechanism in a development toolchain, ensuring that code adheres to quality standards from the outset.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
